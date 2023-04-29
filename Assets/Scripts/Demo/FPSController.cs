@@ -15,7 +15,6 @@ public class FPSController : PortalTraveller {
     public Vector2 pitchMinMax = new Vector2 (-40, 85);
     public float rotationSmoothTime = 0.1f;
 
-    CharacterController controller;
     Camera cam;
     public float yaw;
     public float pitch;
@@ -40,8 +39,6 @@ public class FPSController : PortalTraveller {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
-
-        controller = GetComponent<CharacterController> ();
 
         yaw = transform.eulerAngles.y;
         pitch = cam.transform.localEulerAngles.x;
@@ -77,20 +74,6 @@ public class FPSController : PortalTraveller {
         verticalVelocity -= gravity * Time.deltaTime;
         velocity = new Vector3 (velocity.x, verticalVelocity, velocity.z);
 
-        var flags = controller.Move (velocity * Time.deltaTime);
-        if (flags == CollisionFlags.Below) {
-            jumping = false;
-            lastGroundedTime = Time.time;
-            verticalVelocity = 0;
-        }
-
-        if (Input.GetKeyDown (KeyCode.Space)) {
-            float timeSinceLastTouchedGround = Time.time - lastGroundedTime;
-            if (controller.isGrounded || (!jumping && timeSinceLastTouchedGround < 0.15f)) {
-                jumping = true;
-                verticalVelocity = jumpForce;
-            }
-        }
 
         float mX = Input.GetAxisRaw ("Mouse X");
         float mY = Input.GetAxisRaw ("Mouse Y");
@@ -108,8 +91,6 @@ public class FPSController : PortalTraveller {
         smoothPitch = Mathf.SmoothDampAngle (smoothPitch, pitch, ref pitchSmoothV, rotationSmoothTime);
         smoothYaw = Mathf.SmoothDampAngle (smoothYaw, yaw, ref yawSmoothV, rotationSmoothTime);
 
-        transform.eulerAngles = Vector3.up * smoothYaw;
-        cam.transform.localEulerAngles = Vector3.right * smoothPitch;
 
     }
 
